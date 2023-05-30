@@ -1,16 +1,21 @@
 import React from 'react';
 import Categories from '../components/Categories';
-import Sort from '../components/Sort';
+import Sort, { sortName } from '../components/Sort';
 import PizzaBlock from '../components/PizzaBlock';
 import Skeleton from '../components/PizzaBlock/Skeleton';
 import Pagination from '../components/Pagination';
 import { SearchContext } from '../App';
 import { useSelector, useDispatch } from 'react-redux';
-import { setCategoryId, setCurrentPage } from '../redux/slices/filterSlice';
+import { setCategoryId, setCurrentPage, setFilters } from '../redux/slices/filterSlice';
 import axios from 'axios';
+import qs from 'qs';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const isSearch = React.useRef(false);
+  const isMounted = React.useRef(false);
 
   const { categoryId, sortType, currentPage } = useSelector((state) => state.filterSlice);
 
@@ -27,6 +32,41 @@ const Home = () => {
   };
 
   React.useEffect(() => {
+    if (window.location.search) {
+      const params = qs.parse(window.location.search.substring(1));
+
+      const sort = sortName.find((obj) => obj.sortProperty === params.sortProperty);
+      dispatch(
+        setFilters({
+          ...params,
+          sort,
+        }),
+      );
+      // isSearch.current = true;
+    }
+  }, []);
+
+  React.useEffect(() => {
+    if (isMounted.current) {
+      const queryString = qs.stringify({
+        sortProperty: sortType.sortProperty,
+        categoryId,
+        currentPage,
+      });
+      navigate(`/?${queryString}`);
+    }
+    isMounted.current = true;
+  }, [categoryId, sortType.sortProperty, searchValue, currentPage]);
+
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+    if (!isSearch.current) {
+      fetchPizzas();
+    }
+    isSearch.current = false;
+  }, [categoryId, sortType.sortProperty, searchValue, currentPage]);
+
+  const fetchPizzas = () => {
     setIsLoading(true);
     axios
       .get(
@@ -40,8 +80,7 @@ const Home = () => {
         setItems(res.data);
         setIsLoading(false);
       });
-    window.scrollTo(0, 0);
-  }, [categoryId, sortType.sortProperty, searchValue, currentPage]);
+  };
 
   return (
     <>

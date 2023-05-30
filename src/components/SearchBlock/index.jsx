@@ -30,7 +30,7 @@ const SearchBlock = () => {
     <div className={styles.root}>
       <svg
         className={styles.icon}
-        enable-background="new 0 0 32 32"
+        enableBackground="new 0 0 32 32"
         id="Glyph"
         version="1.1"
         viewBox="0 0 32 32"
