@@ -2,32 +2,43 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setSortType } from '../redux/slices/filterSlice';
 
-
 export const sortName = [
-	{ name: 'популярности (возрос)', sortProperty: 'rating' },
-	{ name: 'популярности (убыв)', sortProperty: '-rating' },
-	{ name: 'цене (возрос)', sortProperty: 'price' },
-	{ name: 'цене (убыв)', sortProperty: '-price' },
-	{ name: 'алфавиту (возрос)', sortProperty: 'title' },
-	{ name: 'алфавиту (убыв)', sortProperty: '-title' },
- ];
-
+  { name: 'популярности (возрос)', sortProperty: 'rating' },
+  { name: 'популярности (убыв)', sortProperty: '-rating' },
+  { name: 'цене (возрос)', sortProperty: 'price' },
+  { name: 'цене (убыв)', sortProperty: '-price' },
+  { name: 'алфавиту (возрос)', sortProperty: 'title' },
+  { name: 'алфавиту (убыв)', sortProperty: '-title' },
+];
 
 function Sort() {
   const dispatch = useDispatch();
-
   const sortType = useSelector((state) => state.filterSlice.sortType);
+  const sortRef = React.useRef();
 
   const [isVisiblePopup, setIsVisivlePopup] = React.useState(false);
-  
 
   const onClickListItem = (obj) => {
     dispatch(setSortType(obj));
     setIsVisivlePopup(false);
   };
 
+  React.useEffect(() => {
+    const handleClickOutside = (event) => {
+      const path = event.composedPath();
+      if (!path.includes(sortRef.current)) {
+        setIsVisivlePopup(false);
+      }
+    };
+
+    document.body.addEventListener('click', handleClickOutside);
+    return () => {
+      document.body.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
+
   return (
-    <div className="sort">
+    <div ref={sortRef} className="sort">
       <div className="sort__label">
         <svg
           width="10"
