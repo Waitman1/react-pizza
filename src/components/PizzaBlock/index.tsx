@@ -2,13 +2,31 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { addItem, selectCartItemById } from '../../redux/slices/cartSlice';
+import { Link } from 'react-router-dom';
 
-function PizzaBlock({ id, title, price, imageUrl, types, sizes, category }) {
+type PizzaBlockProps = {
+  id: string;
+  title: string;
+  price: number;
+  imageUrl: string;
+  types: number[];
+  sizes: number[];
+  category: number;
+};
+
+const PizzaBlock: React.FC<PizzaBlockProps> = ({
+  id,
+  title,
+  price,
+  imageUrl,
+  types,
+  sizes,
+  category,
+}) => {
   const [activeSizes, setActiveSizes] = React.useState(0);
+  const [activeTypes, setActiveTypes] = React.useState(0);
 
   const typesName = ['тонкое', 'традиционное'];
-
-  const [activeTypes, setActiveTypes] = React.useState(0);
 
   const cartItem = useSelector(selectCartItemById(id));
 
@@ -29,8 +47,10 @@ function PizzaBlock({ id, title, price, imageUrl, types, sizes, category }) {
 
   return (
     <div className="pizza-block">
-      <img className="pizza-block__image" src={imageUrl} alt="Pizza" />
-      <h4 className="pizza-block__title">{title}</h4>
+      <Link key={id} to={`pizza/${id}`}>
+        <img className="pizza-block__image" src={imageUrl} alt="Pizza" />
+        <h4 className="pizza-block__title">{title}</h4>
+      </Link>
       <div className="pizza-block__selector">
         <ul>
           {types.map((value) => (
@@ -72,6 +92,6 @@ function PizzaBlock({ id, title, price, imageUrl, types, sizes, category }) {
       </div>
     </div>
   );
-}
+};
 
 export default PizzaBlock;

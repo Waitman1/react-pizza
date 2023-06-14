@@ -11,15 +11,13 @@ import {
   setCategoryId,
   setCurrentPage,
   setFilters,
-
-  
 } from '../redux/slices/filterSlice';
 import { fetchPizzas, selectPizzaItems } from '../redux/slices/pizzaSlice';
 
 import qs from 'qs';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
-const Home = () => {
+const Home: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const isSearch = React.useRef(false);
@@ -28,13 +26,11 @@ const Home = () => {
   const { categoryId, sortType, currentPage, searchValue } = useSelector(selectSortFilter);
   const { items, status } = useSelector(selectPizzaItems);
 
-
-
-  const onChangeCategory = (id) => {
+  const onChangeCategory = (id: number) => {
     dispatch(setCategoryId(id));
   };
 
-  const onChangePage = (number) => {
+  const onChangePage = (number: number) => {
     dispatch(setCurrentPage(number));
   };
 
@@ -76,6 +72,7 @@ const Home = () => {
 
   const getPizzas = async () => {
     dispatch(
+      // @ts-ignore
       fetchPizzas({
         categoryId,
         sortType,
@@ -102,7 +99,7 @@ const Home = () => {
           <div className="content__items">
             {status === 'loading'
               ? [...new Array(6)].map((_, index) => <Skeleton key={index} />)
-              : items.map((obj) => <PizzaBlock key={obj.id} {...obj} />)}
+              : items.map((obj: any) => <PizzaBlock key={obj.key} {...obj} />)}
           </div>
         )}
 
