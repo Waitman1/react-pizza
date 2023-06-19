@@ -5,21 +5,22 @@ import PizzaBlock from '../components/PizzaBlock';
 import Skeleton from '../components/PizzaBlock/Skeleton';
 import Pagination from '../components/Pagination';
 
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   selectSortFilter,
   setCategoryId,
   setCurrentPage,
   setFilters,
 } from '../redux/slices/filterSlice';
-import { fetchPizzas, selectPizzaItems } from '../redux/slices/pizzaSlice';
+import { SearchPizzaParams, fetchPizzas, selectPizzaItems } from '../redux/slices/pizzaSlice';
 
 import qs from 'qs';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '../redux/store';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const isSearch = React.useRef(false);
   const isMounted = React.useRef(false);
 
@@ -30,19 +31,21 @@ const Home: React.FC = () => {
     dispatch(setCategoryId(id));
   };
 
-  const onChangePage = (number: number) => {
-    dispatch(setCurrentPage(number));
+  const onChangePage = (page: number) => {
+    dispatch(setCurrentPage(page));
   };
 
   React.useEffect(() => {
     if (window.location.search) {
-      const params = qs.parse(window.location.search.substring(1));
+      const params = qs.parse(window.location.search.substring(1)) as unknown as SearchPizzaParams;
+      const sort = sortName.find((obj) => obj.sortProperty === params.sortBy);
 
-      const sort = sortName.find((obj) => obj.sortProperty === params.sortProperty);
       dispatch(
         setFilters({
-          ...params,
-          sort,
+          searchValue: params.search,
+          categoryId: Number(params.category),
+          currentPage: Number(params.currentPage),
+          sortType: sort || sortName[0],
         }),
       );
       // isSearch.current = true;
@@ -71,13 +74,18 @@ const Home: React.FC = () => {
   }, [categoryId, sortType.sortProperty, searchValue, currentPage]);
 
   const getPizzas = async () => {
+    const sortBy = sortType.sortProperty.replace('-', '');
+    const order = sortType.sortProperty.includes('-') ? 'asc' : 'desc';
+    const category = categoryId > 0 ? `category=${categoryId}` : '';
+    const search = searchValue ? `&search=${searchValue}` : '';
+
     dispatch(
-      // @ts-ignore
       fetchPizzas({
-        categoryId,
-        sortType,
-        searchValue,
-        currentPage,
+        sortBy,
+        order,
+        category,
+        search,
+        currentPage: String(currentPage),
       }),
     );
   };
