@@ -185,6 +185,20 @@ body {
             display: none;
           }
         }
+        &:disabled {
+          opacity: 0.4;
+
+          &:active {
+            transform: none;
+          }
+
+          &:hover {
+            background-color: transparent;
+            svg path {
+              fill: #8d8d8d;
+            }
+          }
+        }
       }
 
       b {
