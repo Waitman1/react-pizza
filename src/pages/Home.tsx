@@ -6,13 +6,11 @@ import Skeleton from '../components/PizzaBlock/Skeleton';
 import Pagination from '../components/Pagination';
 
 import { useSelector } from 'react-redux';
-import {
-  selectSortFilter,
-  setCategoryId,
-  setCurrentPage,
-  setFilters,
-} from '../redux/slices/filterSlice';
-import { SearchPizzaParams, fetchPizzas, selectPizzaItems } from '../redux/slices/pizzaSlice';
+import { setCategoryId, setCurrentPage, setFilters } from '../redux/filter/slice';
+import { selectSortFilter } from '../redux/filter/selectors';
+import { fetchPizzas } from '../redux/pizza/asyncActions';
+import { selectPizzaItems } from '../redux/pizza/selectors';
+import { SearchPizzaParams } from '../redux/pizza/types';
 
 import qs from 'qs';
 import { useNavigate } from 'react-router-dom';
